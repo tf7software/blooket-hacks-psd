@@ -67,138 +67,90 @@
 
 <div class="container">
     <h1>Blooket Hacks PSD Repository</h1>
-    <p>This page provides an overview of the <a href="https://github.com/tf7software/blooket-hacks-psd" target="_blank">Blooket Hacks PSD</a> repository. It contains various scripts aimed at modifying or hacking the Blooket platform. The hacks include various cheat tools and utilities, mainly written in JavaScript.</p>
+    <p>This page dynamically lists JavaScript files from directories hosted on the <a href="https://github.com/tf7software/blooket-hacks-psd" target="_blank">GitHub Pages</a>. Click on a directory to view and copy scripts.</p>
     
     <h2>Available JS Files</h2>
-    <p>Click on a directory to view the scripts inside and copy them to your clipboard:</p>
-
-    <details>
-        <summary>Blook Rush</summary>
-        <ul class="file-list">
-            <li>
-                <span><code>blook-rush/hack1.js</code></span>
-                <button onclick="copyToClipboard('Blook Rush Hack 1 content')">Copy</button>
-            </li>
-            <li>
-                <span><code>blook-rush/hack2.js</code></span>
-                <button onclick="copyToClipboard('Blook Rush Hack 2 content')">Copy</button>
-            </li>
-        </ul>
-    </details>
-
-    <details>
-        <summary>Cafe</summary>
-        <ul class="file-list">
-            <li>
-                <span><code>cafe/hack1.js</code></span>
-                <button onclick="copyToClipboard('Cafe Hack 1 content')">Copy</button>
-            </li>
-        </ul>
-    </details>
-
-    <details>
-        <summary>Crazy Kingdom</summary>
-        <ul class="file-list">
-            <li>
-                <span><code>crazy-kingdom/hack1.js</code></span>
-                <button onclick="copyToClipboard('Crazy Kingdom Hack 1 content')">Copy</button>
-            </li>
-        </ul>
-    </details>
-
-    <details>
-        <summary>Crypto Hack</summary>
-        <ul class="file-list">
-            <li>
-                <span><code>crypto-hack/hack1.js</code></span>
-                <button onclick="copyToClipboard('Crypto Hack Hack 1 content')">Copy</button>
-            </li>
-        </ul>
-    </details>
-
-    <details>
-        <summary>Deceptive Dinos</summary>
-        <ul class="file-list">
-            <li>
-                <span><code>deceptive-dinos/hack1.js</code></span>
-                <button onclick="copyToClipboard('Deceptive Dinos Hack 1 content')">Copy</button>
-            </li>
-        </ul>
-    </details>
-
-    <details>
-        <summary>Fishing Frenzy</summary>
-        <ul class="file-list">
-            <li>
-                <span><code>fishing-frenzy/hack1.js</code></span>
-                <button onclick="copyToClipboard('Fishing Frenzy Hack 1 content')">Copy</button>
-            </li>
-        </ul>
-    </details>
-
-    <details>
-        <summary>Global</summary>
-        <ul class="file-list">
-            <li>
-                <span><code>global/hack1.js</code></span>
-                <button onclick="copyToClipboard('Global Hack 1 content')">Copy</button>
-            </li>
-        </ul>
-    </details>
-
-    <details>
-        <summary>Gold</summary>
-        <ul class="file-list">
-            <li>
-                <span><code>gold/hack1.js</code></span>
-                <button onclick="copyToClipboard('Gold Hack 1 content')">Copy</button>
-            </li>
-        </ul>
-    </details>
-
-    <details>
-        <summary>Racing</summary>
-        <ul class="file-list">
-            <li>
-                <span><code>racing/hack1.js</code></span>
-                <button onclick="copyToClipboard('Racing Hack 1 content')">Copy</button>
-            </li>
-        </ul>
-    </details>
-
-    <details>
-        <summary>Tower Defense</summary>
-        <ul class="file-list">
-            <li>
-                <span><code>tower-defense/hack1.js</code></span>
-                <button onclick="copyToClipboard('Tower Defense Hack 1 content')">Copy</button>
-            </li>
-        </ul>
-    </details>
-
-    <details>
-        <summary>Tower of Doom</summary>
-        <ul class="file-list">
-            <li>
-                <span><code>tower-of-doom/hack1.js</code></span>
-                <button onclick="copyToClipboard('Tower of Doom Hack 1 content')">Copy</button>
-            </li>
-        </ul>
-    </details>
-
+    <div id="directories"></div>
 </div>
 
 <script>
-    function copyToClipboard(content) {
+    const directories = [
+        'blook-rush',
+        'cafe',
+        'crazy-kingdom',
+        'crypto-hack',
+        'deceptive-dinos',
+        'fishing-frenzy',
+        'global',
+        'gold',
+        'racing',
+        'tower-defense',
+        'tower-of-doom'
+    ];
+
+    const repo = 'tf7software/blooket-hacks-psd'; // Replace with your repo
+    const baseUrl = `https://api.github.com/repos/${repo}/contents/`;
+
+    async function fetchFiles(dir) {
+        const response = await fetch(`${baseUrl}${dir}`);
+        const data = await response.json();
+        return data.filter(file => file.name.endsWith('.js'));
+    }
+
+    function createFileList(files) {
+        const ul = document.createElement('ul');
+        ul.classList.add('file-list');
+        files.forEach(file => {
+            const li = document.createElement('li');
+            const span = document.createElement('span');
+            span.textContent = file.name;
+
+            const button = document.createElement('button');
+            button.textContent = 'Copy';
+            button.addEventListener('click', () => copyFileContent(file.download_url));
+
+            li.appendChild(span);
+            li.appendChild(button);
+            ul.appendChild(li);
+        });
+        return ul;
+    }
+
+    async function copyFileContent(url) {
+        const response = await fetch(url);
+        const content = await response.text();
         const tempTextArea = document.createElement('textarea');
         tempTextArea.value = content;
         document.body.appendChild(tempTextArea);
         tempTextArea.select();
-        tempTextArea.setSelectionRange(0, 99999);
         document.execCommand('copy');
         document.body.removeChild(tempTextArea);
-        alert("Copied: " + content);
+        alert('Script copied to clipboard!');
     }
+
+    async function loadDirectories() {
+        const container = document.getElementById('directories');
+        for (const dir of directories) {
+            const details = document.createElement('details');
+            const summary = document.createElement('summary');
+            summary.textContent = dir;
+            details.appendChild(summary);
+
+            const files = await fetchFiles(dir);
+            if (files.length > 0) {
+                const fileList = createFileList(files);
+                details.appendChild(fileList);
+            } else {
+                const emptyMsg = document.createElement('p');
+                emptyMsg.textContent = 'No JavaScript files found.';
+                details.appendChild(emptyMsg);
+            }
+
+            container.appendChild(details);
+        }
+    }
+
+    loadDirectories();
 </script>
 
 </body>
